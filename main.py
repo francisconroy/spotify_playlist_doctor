@@ -1,5 +1,6 @@
 import sys
 import urllib
+import requests
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -34,7 +35,10 @@ while results:
             print("\n")
             print_track_artist_information(pl_item["track"])
             name, artist = get_name_artist(pl_item["track"])
-            ser_results = sp.search(f"track:{name} artist:{artist}", limit=3)
+            try:
+                ser_results = sp.search(f"track:{name} artist:{artist}", limit=3, market="AU")
+            except requests.exceptions.ReadTimeout:
+                print("Request timed out!")
             tracks = ser_results.get("tracks", {}).get("items", [])
             if tracks:
                 print("\nPOTENTIAL MATCHES FOUND!")
@@ -61,5 +65,14 @@ if y in ['Y', 'y']:
         for tup in update_list:
             writefile.write(",".join([str(x) for x in tup])+'\n')
     old_uids, new_uids = zip(*update_list)
-    result = sp.playlist_add_items(PL_ID, new_uids)
-    sp.playlist_remove_local_tracks(PL_ID, old_uids, result["snapshot_id"])
+    retry = True
+    while retry:
+        try:
+            sp.playlist_remove_local_tracks(PL_ID, old_uids, plid["snapshot_id"])
+        except requests.exceptions.ReadTimeout:
+            retry = input("Type e to break out or enter to continue") != "e"
+    while retry:
+        try:
+            sp.playlist_add_items(PL_ID, new_uids)
+        except requests.exceptions.ReadTimeout:
+            retry = input("Type e to break out or enter to continue") != "e"
