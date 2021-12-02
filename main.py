@@ -26,7 +26,8 @@ def print_track_artist_information(pl_item, tab=0):
 
 # results = sp.current_user_playlists(limit=50, offset=1)
 PL_ID = "6kIBfB0XrNbrT6wsP5MHaw"
-results = sp.playlist_items(PL_ID, limit=3)  # TODO remove limit
+results = sp.playlist_items(PL_ID)
+plid = sp.playlist(PL_ID)
 
 update_list = []  # update list, old track, new track
 while results:
