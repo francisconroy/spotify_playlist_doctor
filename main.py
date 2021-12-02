@@ -64,7 +64,7 @@ y = input("Updates selected, backup and archive? [Y/y to continue]:")
 if y in ['Y', 'y']:
     with open("backup.csv", 'w') as writefile:
         for tup in update_list:
-            writefile.write(",".join([str(x) for x in tup])+'\n')
+            writefile.write(",".join([str(x) for x in tup]) + '\n')
     old_uids, new_uids = zip(*update_list)
     retry = True
     while retry:
