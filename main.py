@@ -31,8 +31,10 @@ results = sp.playlist_items(PL_ID, limit=3)  # TODO remove limit
 update_list = []  # update list, old track, new track
 while results:
     for i, pl_item in enumerate(results['items']):
+        totalidx = i + int(results["offset"])
         if pl_item["is_local"]:
             print("\n")
+            print(f"track {totalidx} of {results['total']}")
             print_track_artist_information(pl_item["track"])
             name, artist = get_name_artist(pl_item["track"])
             try:
@@ -50,9 +52,7 @@ while results:
                     intval = int(input("\nPlease select the track ID or [enter] to skip"))
                 except ValueError:
                     continue
-                update_list.append((i+int(results["offset"]), tracks[intval]["uri"]))
-
-    results = {"next":None}  # TODO remove this testing hack
+                update_list.append(totalidx, tracks[intval]["uri"])
 
     if results['next']:
         results = sp.next(results)
