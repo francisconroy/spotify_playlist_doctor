@@ -42,6 +42,7 @@ while results:
                 ser_results = sp.search(f"track:{name} artist:{artist}", limit=3, market="AU")
             except requests.exceptions.ReadTimeout:
                 print("Request timed out!")
+                continue
             tracks = ser_results.get("tracks", {}).get("items", [])
             if tracks:
                 print("\nPOTENTIAL MATCHES FOUND!")
