@@ -73,8 +73,12 @@ if y in ['Y', 'y']:
             sp.playlist_remove_local_tracks(PL_ID, old_uids, plid["snapshot_id"])
         except requests.exceptions.ReadTimeout:
             retry = input("Type e to break out or enter to continue") != "e"
+        else:
+            break
     while retry:
         try:
             sp.playlist_add_items(PL_ID, new_uids)
         except requests.exceptions.ReadTimeout:
             retry = input("Type e to break out or enter to continue") != "e"
+        else:
+            break
