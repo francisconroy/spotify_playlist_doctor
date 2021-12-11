@@ -54,7 +54,7 @@ while results:
                     intval = int(input("\nPlease select the track ID or [enter] to skip"))
                 except ValueError:
                     continue
-                update_list.append(totalidx, tracks[intval]["uri"])
+                update_list.append((totalidx, tracks[intval]["uri"]))
 
     if results['next']:
         results = sp.next(results)
