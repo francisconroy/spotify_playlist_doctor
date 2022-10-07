@@ -54,11 +54,15 @@ while results:
             if matdat is not None:
                 track_id = matdat.group("track_id")
             else:
-                action = input("Invalid URL given! (r)emove track or (s)kip:")
+                action = input("Invalid URL given! (r)emove track, (e)xit or (s)kip:")
                 if action == 'r':
                     update_list.append((totalidx, None))
+                    continue
                 elif action == 's':
                     continue
+                elif action == 'e':
+                    results = None
+                    break
                 else:
                     logging.error("INVALID ACTION GIVEN!")
             try:
@@ -68,8 +72,12 @@ while results:
                 continue
 
             print("\nMatch found!\n")
-            print_track_artist_information(ser_results)
-            update_list.append((totalidx, ser_results["uri"]))
+            try:
+                print_track_artist_information(ser_results)
+                update_list.append((totalidx, ser_results["uri"]))
+            except Exception:
+                logging.exception("Could not add to update_list!")
+                continue
             # except requests.exceptions.ReadTimeout:
             #     print("Request timed out!")
             #     continue
@@ -80,10 +88,14 @@ while results:
             #     logging.exception("SpotifyException")
             #     continue
 
-    if results['next']:
+    if results is not None and results.get('next'):
         results = sp.next(results)
     else:
         results = None
+
+if not update_list:
+    print("No updates required")
+    exit()
 
 y = input("Updates selected, backup and archive? [Y/y to continue]:")
 if y in ['Y', 'y']:
@@ -102,7 +114,8 @@ if y in ['Y', 'y']:
             break
     while retry:
         try:
-            sp.playlist_add_items(PL_ID, new_uids)
+            if new_uids:
+                sp.playlist_add_items(PL_ID, new_uids)
         except requests.exceptions.ReadTimeout:
             retry = input("Type e to break out or enter to continue") != "e"
         else:
