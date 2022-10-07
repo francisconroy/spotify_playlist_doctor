@@ -1,3 +1,4 @@
+import logging
 import sys
 import urllib
 import requests
@@ -43,6 +44,12 @@ while results:
             except requests.exceptions.ReadTimeout:
                 print("Request timed out!")
                 continue
+            except requests.exceptions.HTTPError:
+                logging.exception("HTTP Error")
+                continue
+            except spotipy.exceptions.SpotifyException:
+                logging.exception("SpotifyException")
+                continue
             tracks = ser_results.get("tracks", {}).get("items", [])
             if tracks:
                 print("\nPOTENTIAL MATCHES FOUND!")
@@ -55,6 +62,8 @@ while results:
                 except ValueError:
                     continue
                 update_list.append((totalidx, tracks[intval]["uri"]))
+            else:
+                print("\nNO MATCH FOUND!!!!")
 
     if results['next']:
         results = sp.next(results)
@@ -82,3 +91,5 @@ if y in ['Y', 'y']:
             retry = input("Type e to break out or enter to continue") != "e"
         else:
             break
+
+https://open.spotify.com/track/1Thv8uCYzyOFC7PME9J936?si=d827ced1f91240e0
